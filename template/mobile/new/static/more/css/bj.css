@@ -1,0 +1,162 @@
+body,
+p {
+	margin: 0;
+	padding: 0;
+}
+
+ul,
+ol,
+li {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.clear:after {
+	content: "";
+	display: block;
+	height: 0;
+	visibility: hidden;
+	clear: both;
+}
+
+.clear {
+	*zoom: 1;
+}
+
+.ht {
+	color: #FFf;
+	text-align: center;
+	width: 100%;
+	font-weight: bolder;
+	position: absolute;
+	top: 100px;
+}
+
+.ht p:nth-child(1) {
+	width: 100%;
+	height: 20px;
+	line-height: 25px;
+	font-size: 20px;
+	text-align: center;
+}
+
+.ht p:nth-child(2) {
+	width: 100%;
+	height: 20px;
+	line-height: 25px;
+	font-size: 30px;
+	text-align: center;
+	margin-top: 20px;
+	font-weight: 900;
+}
+
+.hw {
+	position: absolute;
+	top: 450px;
+	width: 100%;
+}
+
+.bj {
+	width: 100%;
+	height: 100vh;
+	background-image: url(../img/58ad43025d394_1024.jpg);
+	background-size: 100%;
+	position: relative;
+}
+
+.nr {
+	width: 80%;
+	height: 70px;
+	margin-left: 10%;
+	background: #FFFACD;
+	border-radius: 10px;
+	margin-top: 10px;
+}
+
+.nr li {
+	float: left;
+	margin-top: 10px;
+}
+
+.nr li p {
+	text-align: center;
+	line-height: 24px;
+	height: 24px;
+}
+
+.nr li:nth-child(1) {
+	width: 49%;
+	height: 50px;
+}
+
+.nr li:nth-child(2) {
+	width: 1%;
+	height: 50px;
+	background: red;
+	margin-top: 10px;
+}
+
+.nr li:nth-child(3) {
+	width: 49%;
+	height: 50px;
+}
+
+.nr li:nth-child(1) p:nth-child(1) {
+	color: #EE3B3B;
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.nr li:nth-child(3) p:nth-child(1) {
+	color: #EE3B3B;
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.nr li:nth-child(1) p:nth-child(2) {
+	color: #666;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.nr li:nth-child(3) p:nth-child(2) {
+	color: #666;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.yb {
+	width: 50%;
+	height: 200px;
+	margin-left: 25%;
+	position: absolute;
+	top: 200px;
+	background-image: url(../img/yb1.png);
+	background-size: 100%;
+}
+
+.ym {
+	width: 100%;
+	height: 30px;
+	line-height: 24px;
+	font-size: 16px;
+	color: #fff;
+	text-align: center;
+	font-weight: bold;
+	position: absolute;
+	top: 415px;
+	font-family: "KaiTi"
+}
+
+.ym span:nth-child(1) {
+	color: #FFFACD;
+}
+
+.ym span:nth-child(2) {
+	color: #FFA54F;
+}
+
+.ym span:nth-child(3) {
+	color: #FFD700;
+}
