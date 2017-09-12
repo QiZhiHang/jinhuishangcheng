@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:46:"./template/mobile/new/cart\ajax_cart_list.html";i:1490353004;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:46:"./template/mobile/new/cart\ajax_cart_list.html";i:1502967767;}*/ ?>
 <style type="text/css">
 	.page-shopping .bottom-panel{display: flex;}
 	.page-shopping .bottom-panel .info{margin-top: 4px;width: 50%;}
@@ -154,10 +154,11 @@ function del_cart_goods(goods_id)
 
 //点击结算
 function selcart_submit()
-{
+{   
     //获取中的商品数量
      var j=0;
 	 $('input[name^="cart_select"]:checked').each(function(){
+
 	       j++;
 	 });
     //判断是否有选择

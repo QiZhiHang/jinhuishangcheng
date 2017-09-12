@@ -627,7 +627,7 @@ function tpCache($config_key,$data = array()){
  * @param   float   distribut_money 分佣金额
  * @return  bool
  */
-function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distribut_money = 0,$my_fanxian_money=0){
+function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distribut_money = 0,$my_fanxian_money=0,$order_sn = ''){
     /* 插入帐户变动记录 */
     $account_log = array(
         'user_id'       => $user_id,
@@ -636,6 +636,7 @@ function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distr
         'my_fanxian_money'=> $my_fanxian_money,
         'change_time'   => time(),
         'desc'   => $desc,
+        'order_sn' => $order_sn,
     );
     /* 更新用户信息 */
 //    $sql = "UPDATE __PREFIX__users SET user_money = user_money + $user_money," .
@@ -975,8 +976,9 @@ function update_pay_status($order_sn,$ext=array())
         //分销设置
         M('rebate_log')->where("order_id", $id)->save(array('status'=>2,'confirm'=>time()));
         
-        $model = new UsersLogic();
-        $order_goods = $model->get_order_goods($id);
+        //$model = new UsersLogic();
+        $condition = array('order_id'=>$id,'order_status'=>2);
+        $order_goods = M('order')->where($condition)->find();
        // var_dump($order_goods);die;
         if(!empty($order_goods)){
             $user_info = M('users')->where(array('user_id'=>$user_id))->find();
@@ -1003,16 +1005,9 @@ function update_pay_status($order_sn,$ext=array())
 
         $data['user_id'] = intval($user_info['user_id']);
 
-        if(!empty($order_goods['result'])){
+       
 
-            foreach ($order_goods['result'] as $key => $value) {
-                $re = preg_match('/^TP000\d/', $value['goods_sn']);
-                if($re){
-
-                     $data['my_fanxian_money'] += $value['member_goods_price']*$value['goods_num'];
-                }
-            }
-        }
+        $data['my_fanxian_money'] = $order_goods['user_money'] - $order_goods['shipping_price'];
        // $data['is_complete'] = 0;
        // $data['is_tixian'] = 0;
        // // $data['now_money'] = 0;
@@ -1028,22 +1023,15 @@ function update_pay_status($order_sn,$ext=array())
             if (intval($user_info['user_id']) <= 0 ) {
                 return ;
             }
-            if(!empty($order_goods['result'])){
+            if(!empty($order_goods['user_money'])){
 
-                foreach ($order_goods['result'] as $key => $value) {
-                      $re = preg_match('/^TP000\d/', $value['goods_sn']);
-                    if($re){
-                       
-                        $teshu += $value['member_goods_price']*$value['goods_num'];
+               
 
-                        }else{
-                            $yiban += $value['member_goods_price']*$value['goods_num'];
-                    }
-                }
+                $money = $order_goods['user_money'] - $order_goods['shipping_price'];
 
                  //特殊商品三级分销
 
-                if($teshu>0){
+                if($order_goods['is_teshu'] == 1){
                     $array = array('1'=>5,'2'=>0,'3'=>3,'4'=>0,'5'=>2);
                     $member_info = getMemberinfo(intval($user_info['user_id']),'*');
                     $fr_recommend_info = $member_info;
@@ -1051,21 +1039,21 @@ function update_pay_status($order_sn,$ext=array())
                             $fr_recommend_info = getMemberinfo($fr_recommend_info['user_recommend_id'],'*');
 
                             if(empty($fr_recommend_info)){
-                                break;
+                                return false;
                             }
 
-                           accountLog($fr_recommend_info['user_id'],0,$teshu*($v/100),'成员购买商品获得佣金',0,0); 
+                           accountLog($fr_recommend_info['user_id'],0,$money*($v/100),'线下成员购买特殊商品商品获得佣金',0,0); 
                             
                         }
-                }elseif ($yiban>0) {
+                }elseif ($order_goods['is_teshu'] == 0) {
                     $recommend_id = $user_info['user_recommend_id'];
                     $recommend_info = getMemberinfo($recommend_id,'*');
 
                     if(empty($recommend_info)){
-                        break;
+                        return false;
                     }
 
-                    accountLog($recommend_info['user_id'],0,$teshu*(5/100),'下线成员购买商品返利金额',0,0);
+                    accountLog($recommend_info['user_id'],0,$money*(5/100),'下线成员购买商品返利金额',0,0);
                 }
 
             }

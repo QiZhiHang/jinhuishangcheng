@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:37:"./template/mobile/new/user\login.html";i:1495767898;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:37:"./template/mobile/new/user\login.html";i:1503042952;}*/ ?>
 <!DOCTYPE html >
 <html>
 <head>
@@ -27,7 +27,7 @@
             <div class="Login">
 				<dl>
 	                <dt>用户名：</dt>
-			    	<dd><input type="text" name="username" id="username" placeholder="请输入邮箱/手机号" value="" /></dd>
+			    	<dd><input type="text" name="username" id="username" placeholder="手机号" value="" /></dd>
 				</dl>
                 <dl style=" margin-top:15px;">
                 <dt>密码：</dt>

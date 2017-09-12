@@ -1,4 +1,5 @@
 var indexApp = {
+
 	//鍏ュ彛鏂规硶
 	init : function (valueJson) {
 		this.valueJson = valueJson; //鑾峰彇鍓嶅彴椤甸潰浼犲叆鐨勫弬鏁�
@@ -44,13 +45,14 @@ var indexApp = {
 			$(this).parents('.dialog').css('display','none');
 		});
 	},
-	//杞洏寮€濮嬬殑鍒濆鍖栧嚱鏁� 浠ュ強鐐瑰嚮浜嬩欢 閫氳繃閾惧紡璋冪敤鍔犺浇 鑰岄潪init()鍒濆鍖栧姞杞�,杩欐牱鍋�,褰撴湭寮€濮嬫垨鑰呭凡缁撴潫椤甸潰涓嶉渶瑕佽浆鍔ㄧ殑鏃跺€�,涓嶉摼寮忚皟鐢ㄦ鏂规硶灏辫
+	
 	wheelStart : function () {
 		var t = this;
-		t.nowRan = 0; //褰撳墠寮у害
-		t.once = true; //鏄惁绗竴娆�
-		t.onStart = true; //鏄惁寮€濮嬩簡杞姩
-
+		t.nowRan = 0; //当前弧度
+		t.once = true; //是否第一次
+		t.onStart = true; //是否开始了转动
+		t.runnum = 0;
+		
 		//鐐瑰嚮浜嬩欢
 		t.valueJson['startBtn'].click(function () {
 			if(t.onStart == true) { //鍙湁 涓� true 鐨� 鏃跺€� 鎵嶅厑璁歌浆鍔�
@@ -61,83 +63,147 @@ var indexApp = {
 					t.dialog($('.gz')); //寮瑰嚭鍏虫敞鎻愮ず妗�
 				}else {
 
-					//ajax 浜嬩欢 鑾峰彇
-					//寰楀埌鐨勫弬鏁拌缁嗚浜や簰鏂囨。
+					//转盘开始的初始化函数 以及点击事件 通过链式调用加载 而非init()初始化加载,这样做,当未开始或者已结束页面不需要转动的时候,不链式调用此方法就行
 					
-					/*$.ajax({
-						'type' : 'POST',
+					$.ajax({
+						'type' : 'GET',
 						'url' : t.valueJson['clickAjaxUrl'],
-						success : function (data) {*/
-							var data = {'status' : 1, 'actionStatus' : 1, 'ran' : 40, 'onceran' : 40, 'num' : 1}
-							if(data['status'] == 1) { //琛ㄧず鎴愬姛 
+						success : function (data) {
+							data = JSON.parse(data)
+							if(data.status == 1) { //琛ㄧず鎴愬姛 \
 								t.showWheel(data); //鎵ц杞姩鏁堟灉
 							}else if(data['status'] == 2){ //閲戦涓嶈冻 鎴栬€呮鏁颁笉瓒�
+								
 								t.dialog($('.info'),data); //娌℃湁鎸夐挳鐨勬彁绀轰俊鎭�
 							}else {         //鍑虹幇浜嗗紓甯搁敊璇�
+								
 								t.dialog($('.again'),data);  //鎵ц甯︽寜閽殑鎻愮ず妗�
 							}
-						/*}
-					});*/
+						}
+					});
 				}
 			}
 		});
 	},
 
-	//杞洏杞姩鍏蜂綋绠楁硶
+	//转盘转动具体算法
+	
 	showWheel : function (data) {
+		//alert(data)
 		var t = this;
-		//闇€瑕佽浆鍔ㄧ殑鍊� 绛変笌褰撳墠鍊� + 榛樿杞姩7200搴� + 鍚庡彴璁＄畻浼犺繃鏉ョ殑搴︽暟
+		//console.log(t)
+	//需要转动的值 等与当前值 + 默认转动7200度 + 后台计算传过来的度数
 		var ra = t.nowRan + t.valueJson['actionRan'] + data['ran'];
+		var aa = t.runnum + data['ran'];
 
-		//绗竴娆＄殑璇� 寮у害瑕佸姞涓婃瘡涓€鍧楀姬搴︾殑涓€鍗�
+		//第一次的话 弧度要加上每一块弧度的一半
 		if(t.once) {
 			t.once = false;
 			ra = ra + (data['onceran'] / 2)
 		}
 
-		//娉ㄦ剰鎸囬拡 鍜� 杞洏 鍙嶆柟鍚戣浆鍔� 鏉ヨ揪鍒� 鎸囬拡 涓嶅姩鐨勬晥鏋�
+		//注意指针 和 转盘 反方向转动 来达到 指针 不动的效果
 		t.valueJson['wheelBody'].css('webkitTransform','rotate('+ ra +'deg)');
 		t.valueJson['startBtn'].css('webkitTransform','rotate('+ (-ra) +'deg)');
 
-		//閲嶆柊鑾峰彇褰撳墠鐨勫害鏁�
+		//重新获取当前的度数
+	
 		t.nowRan = ra;
+		
+	 	//alert(parseInt((t.nowRan-20) / 7200))
+		data['numss'] = parseInt((t.nowRan-20) / 7200);
+	 	//data['runnum'] = t.runnum;
+	 	if(aa >=360){
 
-		//杞洏杞姩闇€瑕�4S  杩欓噷 4.5S 鍚� 鎵ц 鍚勭寮瑰嚭鎻愮ず淇℃伅妗嗙殑浜嬩欢
+	 		aa = aa - 360;
+	 	}
+	 	t.runnum = aa;
+	 	data['runnum'] = t.runnum;
+	 	console.log(data)
+		//转盘转动需要4S  这里 4.5S 后 执行 各种弹出提示信息框的事件
 		setTimeout(function () {
 			t.showDialog(data);
 			t.onStart = true;
 		},4500);
 	},
 
-	//鏍规嵁鍚勭涓嶅悓鐨勫弬鏁� 鏄剧ず寮瑰嚭灞傜殑鎻愮ず妗�
+	//根据各种不同的参数 显示弹出层的提示框
 	showDialog : function (data) {
 		var t = this;
-
-		if(data['actionStatus'] == 1) {  //鍊间负1 琛ㄧず 鎶藉彇鍒颁簡鐜伴噾绾㈠寘
-			t.deduct(data); //鎵ｉ櫎娆℃暟;
-			t.dialog($('.theForm'), data); //鑾峰緱濂栧搧鐨� 鎻愮ず淇℃伅妗�
-		}else if(data['actionStatus'] == 2) {   //鍊间负2 琛ㄧず 鍐嶆潵涓€娆�  鍐嶆潵涓€娆′笉鎵ｉ櫎娆℃暟
-			t.dialog($('.again'), data);//鍐嶆潵涓€娆�
-		}else if(data['actionStatus'] == 3) {  //鍊间负3 琛ㄧず 璋㈣阿鍙備笌
-			t.deduct(data); //鎵ｉ櫎娆℃暟;  
-			t.dialog($('.again'), data);//璋㈣阿鍙備笌
+		//alert(data['actionStatus'])
+		if(data['actionStatus'] == 1) {  //值为1 表示 抽取到了现金红包
+			t.deduct(data); //扣除次数;
+			t.dialog($('.theForm'), data); //获得奖品的 提示信息框
+		}else if(data['actionStatus'] == 2) {   //值为2 表示 再来一次  再来一次不扣除次数
+			t.dialog($('.again'), data);//再来一次
+		}else if(data['actionStatus'] == 3) {  //值为3 表示 谢谢参与
+			t.deduct(data); //扣除次数;   
+			t.dialog($('.again'), data);//谢谢参与
 		}
 	},
 
-	//鎵ｉ櫎娆℃暟鐨勭浉鍏虫搷浣�  娆℃暟鐨� 鍙傛暟 涔熸槸ajax 鍚庡彴浼犻€掕繃鏉�
+	//扣除次数的相关操作  次数的 参数 也是ajax 后台传递过来
 	deduct : function (data) {
 		$('.g-num').find('em').html(data['num']);
 	},
 
-	//寮瑰嚭灞�
+	//弹出层
 	dialog : function (obj, data, bl) {
-		if(data && !bl) { //鍏虫敞 鍐嶆潵涓€娆�  璋㈣阿鍙備笌  绯荤粺寮傚父 閮芥槸鎵ц姝ゅ
+		var t = this;
+		if(data && !bl) { //关注 再来一次  谢谢参与  系统异常 都是执行此处
 			obj.find('d-main').children('p').html(data['mess']);
 		}
+		var aa = data['runnum']/40;
+		
+		if(aa == 0 || aa == 9){
 
-		//鎵撳紑寮瑰嚭灞�
+			$('#my_d_main').html('谢谢惠顾，下次努力');
+		}else if(aa == 1){
+
+			$('#my_d_main').html('恭喜您，获得二积分，已转入您的账户中');
+
+		}else if(aa == 2){
+			$('#my_d_main').html('谢谢惠顾，下次努力');
+		}else if(aa == 3){
+
+			$('#my_d_main').html('恭喜您，获得三积分，已转入您的账户中');
+
+		}else if(aa == 4){
+
+			$('#my_d_main').html('谢谢惠顾，下次努力');
+		}else if(aa == 5){
+
+			$('#my_d_main').html('恭喜您，获得四积分，已转入您的账户中');
+
+		}else if(aa==6){
+
+			$('#my_d_main').html('谢谢惠顾，下次努力');
+		}else if(aa ==7){
+
+			$('#my_d_main').html('谢谢惠顾，下次努力');
+		}else if(aa == 8){
+
+			$('#my_d_main').html('恭喜您，获得一积分，已转入您的账户中');
+		}
+		
 		obj.css('display','block');
+		t.del_pay_points(aa);
+	},
 
-	}
+	del_pay_points : function (aa){
+
+		$.ajax({
+			url:"{:U('user/delLottery')}",
+			data:{aa:aa},
+			dataType:'JSON',
+			type:'GET',
+			success:function(data){
+
+				//alert(data)
+			}
+
+		})
+
+	}	
 
 }

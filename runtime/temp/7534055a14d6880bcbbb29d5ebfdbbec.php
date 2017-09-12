@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:40:"./template/mobile/new/user\recharge.html";i:1502095841;s:42:"./template/mobile/new/public\header11.html";i:1502075948;s:38:"./template/mobile/new/public\menu.html";i:1490353004;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:3:{s:40:"./template/mobile/new/user\recharge.html";i:1502863134;s:42:"./template/mobile/new/public\header11.html";i:1502075948;s:38:"./template/mobile/new/public\menu.html";i:1490353004;}*/ ?>
 <!DOCTYPE html >
 <html>
 <head>
@@ -179,12 +179,12 @@ a.orgBtn {background: #f60;border: 1px solid #ef6000;}
 
            <div class="g-Recharge">
                <ul id="ulOption">
-                   <li money="10000"><a href="javascript:;" class="z-sel">1000元<s></s></a></li>
-                   <li money="20000"><a href="javascript:;">2000元<s></s></a></li>
-                   <li money="30000"><a href="javascript:;">3000元<s></s></a></li>
-                   <li money="40000"><a href="javascript:;">4000元<s></s></a></li>
-                   <li money="50000"><a href="javascript:;">5000元<s></s></a></li>
-                   <li money="60000"><a href="javascript:;">6000元<s></s></a></li>
+                   <li money="100"><a href="javascript:;" class="z-sel">100元<s></s></a></li>
+                   <li money="200"><a href="javascript:;">200元<s></s></a></li>
+                   <li money="300"><a href="javascript:;">300元<s></s></a></li>
+                   <li money="400"><a href="javascript:;">400元<s></s></a></li>
+                   <li money="500"><a href="javascript:;">500元<s></s></a></li>
+                   <li money="1000"><a href="javascript:;">1000元<s></s></a></li>
                </ul>
            </div>
 		<div class="clearfix mt10 m-round g-pay-ment g-bank-ct">

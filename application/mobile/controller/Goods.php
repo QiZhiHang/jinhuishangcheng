@@ -55,12 +55,12 @@ class Goods extends MobileBase {
         $goodsCate = M('GoodsCategory')->where("id", $id)->find();// 当前分类
         //($goodsCate['level'] == 1) && header('Location:'.U('Home/Channel/index',array('cat_id'=>$id))); //一级分类跳转至大分类馆
         $cateArr = $goodsLogic->get_goods_cate($goodsCate);
-         
+        
         // 帅选 品牌 规格 属性 价格
         $cat_id_arr = getCatGrandson ($id);
-        
+       
         $filter_goods_id = M('goods')->where("is_on_sale=1")->where("cat_id", "in" ,implode(',', $cat_id_arr))->cache(true)->getField("goods_id",true);
-        
+         //dump($filter_goods_id);die;
         // 过滤帅选的结果集里面找商品
         if($brand_id || $price)// 品牌或者价格
         {
@@ -80,15 +80,18 @@ class Goods extends MobileBase {
 
         //筛选网站自营,入驻商家,货到付款,仅看有货,促销商品
         $sel =I('sel');
+
         if($sel)
         {
             $goods_id_4 = $goodsLogic->getFilterSelected($sel,$cat_id_arr);
             $filter_goods_id = array_intersect($filter_goods_id,$goods_id_4);
         }
-         
+       
         $filter_menu  = $goodsLogic->get_filter_menu($filter_param,'goodsList'); // 获取显示的帅选菜单
         $filter_price = $goodsLogic->get_filter_price($filter_goods_id,$filter_param,'goodsList'); // 帅选的价格期间
+       
         $filter_brand = $goodsLogic->get_filter_brand($filter_goods_id,$filter_param,'goodsList'); // 获取指定分类下的帅选品牌
+         
         $filter_spec  = $goodsLogic->get_filter_spec($filter_goods_id,$filter_param,'goodsList',1); // 获取指定分类下的帅选规格
         $filter_attr  = $goodsLogic->get_filter_attr($filter_goods_id,$filter_param,'goodsList',1); // 获取指定分类下的帅选属性
         
@@ -162,7 +165,7 @@ class Goods extends MobileBase {
 
         $goods_id = I("get.id/d");
         $goods = $goodsModel::get($goods_id);
-        
+        //dump($goods);die;
         $goods['discount'] = $goods->discount;
         $goodsPromFactory = new GoodsPromFactory();
        

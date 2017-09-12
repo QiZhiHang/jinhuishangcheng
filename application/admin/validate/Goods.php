@@ -27,10 +27,12 @@ class Goods extends Validate
         $shop_price = I('shop_price', 0);
         $point_rate_value = tpCache('shopping.point_rate');
         $point_rate_value = empty($point_rate_value) ? 0 : $point_rate_value;
-        if ($exchange_integral > ($shop_price * $point_rate_value)) {
+       /* if ($exchange_integral > ($shop_price * $point_rate_value) || 1 != 1) {
             return '积分抵扣金额不能超过商品总额';
         } else {
             return true;
-        }
+        }*/
+
+        return true;
     }    
 }

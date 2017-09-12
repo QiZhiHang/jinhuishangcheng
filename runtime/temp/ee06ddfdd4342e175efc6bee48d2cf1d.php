@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:6:{s:37:"./template/mobile/new/user\index.html";i:1502102539;s:42:"./template/mobile/new/public\header11.html";i:1502075948;s:44:"./template/mobile/new/public\uer_topnav.html";i:1490353004;s:40:"./template/mobile/new/public\footer.html";i:1490353004;s:44:"./template/mobile/new/public\footer_nav.html";i:1497651631;s:42:"./template/mobile/new/public\wx_share.html";i:1490353004;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:6:{s:37:"./template/mobile/new/user\index.html";i:1502102539;s:42:"./template/mobile/new/public\header11.html";i:1502075948;s:44:"./template/mobile/new/public\uer_topnav.html";i:1490353004;s:40:"./template/mobile/new/public\footer.html";i:1490353004;s:44:"./template/mobile/new/public\footer_nav.html";i:1502948158;s:42:"./template/mobile/new/public\wx_share.html";i:1490353004;}*/ ?>
 <!DOCTYPE html >
 <html>
 <head>
@@ -142,7 +142,7 @@
 			    <span>分类</span></a></li>
 			<li><a href="<?php echo U('User/dalesong'); ?>">
 			    <i class="vf_2"></i>
-			    <span>大乐送</span></a></li>
+			    <span>金辉</span></a></li>
 			<li>
 			<a href="<?php echo U('Cart/cart'); ?>">
 			   <em class="global-nav__nav-shop-cart-num" id="cart_quantity" style="right:9px;"></em>

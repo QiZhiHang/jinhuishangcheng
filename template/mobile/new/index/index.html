@@ -27,7 +27,7 @@
 <body>
 <div id="page" class="showpage">
 <div>
-<header id="header"> 
+<header id="header"> <img src="{$tpshop_config['shop_info_store_logo']}" alt="" style="height: 41px;width: 146px;margin-left: 30px;">
 <a href="{:U('Goods/categoryList')}" class="top_bt"></a><a href="{:U('Cart/cart')}" class='user_btn'></a>
 <span href="javascript:void(0)" class="logo">{$tpshop_config['shop_info_store_name']}</span> 
 </header>
@@ -64,7 +64,7 @@
 	<nav>
 		<ul>
 			<li>
-				<a href="{:U('User/lottery')}">
+				<a href="{:U('Goods/CategoryList')}">
 					<img alt="全部分类" src="__STATIC__/images/1440437165699930301.png" />
 					<span>全部分类</span>
 				</a>
@@ -76,9 +76,10 @@
 				</a>
 			</li>
 			<li>
-				<a href="{:U('Cart/cart')}">
-					<img alt="购物车" src="__STATIC__/images/1440439353048484531.png" />
-					<span>购物车</span>
+        <!-- <a href="{:U('Cart/cart')}"> -->
+				 <a href="{:U('User/lottery')}"> 
+					<img alt="抽奖乐" src="__STATIC__/images/1440439353048484531.png" />
+					<span>抽奖乐</span>
 				</a>
 			</li>
 			<li>

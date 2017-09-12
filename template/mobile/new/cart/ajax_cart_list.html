@@ -154,10 +154,11 @@ function del_cart_goods(goods_id)
 
 //点击结算
 function selcart_submit()
-{
+{   
     //获取中的商品数量
      var j=0;
 	 $('input[name^="cart_select"]:checked').each(function(){
+
 	       j++;
 	 });
     //判断是否有选择

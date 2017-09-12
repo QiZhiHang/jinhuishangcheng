@@ -70,14 +70,16 @@ class Cart extends MobileBase {
         $goods_num = I("goods_num/d");// 商品数量
         $goods_spec = I("goods_spec/a",array()); // 商品规格
         $data = M('goods')->where('goods_id='.$goods_id)->field('goods_sn')->find();
+        //dump($data);die;
         //查看用户的返现金额是否大于0 是否购买特殊商品
         $is_buy_special_goods = $this->user['my_fanxian_money'];
         //是否完全返现完毕
         $is_complete = $this->user['is_complete'];
         //是否有提现
         $is_tixian = $this->user['is_tixian'];
-        
-        if($is_buy_special_goods > 0){
+        $condition =array('user_id'=>$this->user_id,'order_status'=>1);
+        $is_teshu =  M('order')->where($condition)->find();
+        if($is_buy_special_goods > 0 || $is_teshu){
             $re = preg_match('/^TP000\d/', $data['goods_sn']);
             if($re){
 
@@ -111,7 +113,7 @@ class Cart extends MobileBase {
             $where['user_id'] = $user_id;
         }
         $cartList = M('Cart')->where($where)->getField("id,goods_num,selected");
-
+       // dump(22222222);die;
         if($cart_form_data)
         {
             // 修改购物车数量 和勾选状态
@@ -134,7 +136,7 @@ class Cart extends MobileBase {
      * 购物车第二步确定页面
      */
     public function cart2()
-    {
+    {   
         if($this->user_id == 0)
             $this->error('请先登陆',U('Mobile/User/login'));
         $address_id = I('address_id/d');
@@ -153,8 +155,31 @@ class Cart extends MobileBase {
             $this->error ('你的购物车没有选中商品','Cart/cart');
 
         $result = $this->cartLogic->cartList($this->user, $this->session_id,1,1); // 获取购物车商品
-        $shippingList = M('Plugin')->where("`type` = 'shipping' and status = 1")->cache(true,TPSHOP_CACHE_TIME)->select();// 物流公司
 
+        //dump($result);die;
+        $shippingList = M('Plugin')->where("`type` = 'shipping' and status = 1")->cache(true,TPSHOP_CACHE_TIME)->select();// 物流公司
+        $data = $result['cartList'];
+        //dump($data);die();
+        $ptn = "/^TP000\d/";
+        if(!empty($data)){
+
+            foreach ($data as $k => $v) {
+                if(preg_match($ptn,$v['goods_sn'])){
+
+                    $arr[] = 1;
+                }else{
+
+                    $arr[] = 0;
+                }
+            }
+        }
+
+        $count = count(array_unique($arr));
+
+        if($count == 2){
+
+            $this->error('请不要购买不同类型的商品','Cart/cart');
+        }
         // 找出这个用户的优惠券 没过期的  并且 订单金额达到 condition 优惠券指定标准的
         $sql = "select c1.name,c1.money,c1.condition, c2.* from __PREFIX__coupon as c1 inner join __PREFIX__coupon_list as c2  on c2.cid = c1.id and c1.type in(0,1,2,3) and order_id = 0  where c2.uid = {$this->user_id} and ".time()." < c1.use_end_time and c1.condition <= {$result['total_price']['total_fee']}";
         $couponList = DB::query($sql);
@@ -177,6 +202,7 @@ class Cart extends MobileBase {
      */
     public function cart3(){
 
+
         if($this->user_id == 0)
             exit(json_encode(array('status'=>-100,'msg'=>"登录超时请重新登录!",'result'=>null))); // 返回结果状态
         
@@ -197,8 +223,32 @@ class Cart extends MobileBase {
 		
 		$address = M('UserAddress')->where("address_id", $address_id)->find();
 		$order_goods = M('cart')->where(['user_id'=>$this->user_id,'selected'=>1])->select();
+
+        $ptn = "/^TP000\d/";
+        if(!empty($order_goods)){
+
+            foreach ($order_goods as $k => $v) {
+                if(preg_match($ptn,$v['goods_sn'])){
+
+                    $arr[] = 1;
+                }else{
+
+                    $arr[] = 0;
+                }
+            }
+        }
+        //如果有，则返回真
+        $is_in = in_array(1, $arr);
+
+        if($is_in){
+
+            $is_teshu = 1;
+        }else{
+
+            $is_teshu = 0;
+        }
+        if($is_in && $pay_points >0) exit(json_encode(array('status'=>-2000,'msg'=>'特殊商品部允许使用积分购买','result'=>null)));
         $result = calculate_price($this->user_id,$order_goods,$shipping_code,0,$address[province],$address[city],$address[district],$pay_points,$user_money,$coupon_id,$couponCode);
-                
 		if($result['status'] < 0)	
 			exit(json_encode($result));      	
 	// 订单满额优惠活动		                
@@ -224,12 +274,13 @@ class Cart extends MobileBase {
             if(empty($coupon_id) && !empty($couponCode)){
                 $coupon_id = M('CouponList')->where("code", $couponCode)->getField('id');
             }
-            $result = $this->cartLogic->addOrder($this->user_id,$address_id,$shipping_code,$invoice_title,$coupon_id,$car_price,$user_note); // 添加订单
+            $result = $this->cartLogic->addOrder($this->user_id,$address_id,$shipping_code,$invoice_title,$coupon_id,$car_price,$user_note,$is_teshu); // 添加订单
             exit(json_encode($result));
         }
             $return_arr = array('status'=>1,'msg'=>'计算成功','result'=>$car_price); // 返回结果状态
             exit(json_encode($return_arr));
-    }	
+    }
+
     /*
      * 订单支付页面
      */

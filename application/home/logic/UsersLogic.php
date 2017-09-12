@@ -160,7 +160,7 @@ class UsersLogic extends Model
      * @param $password2 确认密码
      * @return array
      */
-    public function reg($username,$password,$password2,$recommend_mobile=''){
+    public function reg($username,$password,$password2,$recommend_mobile='',$nickname){
     	$is_validated = 0 ;
         if(check_email($username)){
             $is_validated = 1;
@@ -201,7 +201,7 @@ class UsersLogic extends Model
         $map['first_leader'] = cookie('first_leader'); // 推荐人id
         $map['user_recommend_id'] = $recommend_user['user_id']; //推荐人id
         $map['user_recommend_mobile'] = $recommend_user['mobile']; //推荐人id
-
+        $map['nickname'] = $nickname;
         // 如果找到他老爸还要找他爷爷他祖父等
         if($map['first_leader'])
         {
@@ -219,6 +219,7 @@ class UsersLogic extends Model
             $map['is_distribut']  = 1;        
         
         $map['token'] = md5(time().mt_rand(1,99999));
+       // dump($map);die;
         $user_id = M('users')->insertGetId($map);
         if($user_id === false)
             return array('status'=>-1,'msg'=>'注册失败');      

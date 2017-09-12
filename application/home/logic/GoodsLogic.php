@@ -33,14 +33,21 @@ class GoodsLogic extends Model
      * 获取 商品列表页帅选品牌
      */
     public function get_filter_brand($goods_id_arr, $filter_param, $action)
-    {
+    {   
+      
         if (!empty($filter_param['brand_id'])) {
             return array();
         }
 
-        $map['goods_id'] = ['in', $goods_id_arr];
+     
+        if (!empty($goods_id_arr)) {
+            $map['goods_id'] = ['in', $goods_id_arr];
+        }
+        
         $map['brand_id'] = ['>', 0];
-        $brand_id_arr = M('goods')->where($map)->column('brand_id');         
+        
+        $brand_id_arr = M('goods')->where($map)->column('brand_id'); 
+        //dump($brand_id_arr);die;        
         $list_brand = M('brand')->where('id','in',$brand_id_arr)->limit('30')->select();
 
         foreach ($list_brand as $k => $v) {
@@ -648,8 +655,7 @@ class GoodsLogic extends Model
      * @time  17-4-20
      */
     public function add_visit_log($user_id,$goods){
-        $record = M('goods_visit')->where(array('user_id'=>$user_id,'goods_id'=>$goods['goods_id']))->find();
-        //var_dump($record);die;
+        $record = M('goods_visit')->where(array('user_id'=>$user_id,'goods_id'=>$goods['goods_id']))->find();   
         if($record){
             M('goods_visit')->where(array('user_id'=>$user_id,'goods_id'=>$goods['goods_id']))->save(array('visittime'=>time()));
         }else{
@@ -752,4 +758,3 @@ class GoodsLogic extends Model
     }
 }
 
- 

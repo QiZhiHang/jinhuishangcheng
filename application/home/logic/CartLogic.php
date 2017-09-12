@@ -312,7 +312,7 @@ class CartLogic extends Model
      * @param type $user_note 用户备注
      * @return type $order_id 返回新增的订单id
      */
-    public function addOrder($user_id,$address_id,$shipping_code,$invoice_title,$coupon_id = 0,$car_price,$user_note='')
+    public function addOrder($user_id,$address_id,$shipping_code,$invoice_title,$coupon_id = 0,$car_price,$user_note='',$is_teshu)
     {
         
         // 仿制灌水 1天只能下 50 单  // select * from `tp_order` where user_id = 1  and order_sn like '20151217%' 
@@ -349,8 +349,11 @@ class CartLogic extends Model
                 'add_time'         =>time(), // 下单时间                
                 'order_prom_id'    =>$car_price['order_prom_id'],//'订单优惠活动id',
                 'order_prom_amount'=>$car_price['order_prom_amount'],//'订单优惠活动优惠了多少钱',
-                'user_note'        =>$user_note, // 用户下单备注          
+                'user_note'        =>$user_note, // 用户下单备注 
+                'is_teshu'         =>$is_teshu,
         );
+
+        //dump($data);die;
         $data['order_id'] = $order_id = M("Order")->insertGetId($data);
         $order = $data;//M('Order')->where("order_id", $order_id)->find();
         if(!$order_id)

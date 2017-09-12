@@ -257,7 +257,7 @@ class Goods extends Base {
      */
     public function addEditGoods()
     {     
-    
+        
         $GoodsLogic = new GoodsLogic();
         $Goods = new \app\admin\model\Goods(); //
         $type = I('goods_id') > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -317,6 +317,7 @@ class Goods extends Base {
         }
 
         $goodsInfo = M('Goods')->where('goods_id=' . I('GET.id', 0))->find();
+        //dump($goodsInfo);die;
         //$cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
         $level_cat2 = $GoodsLogic->find_parent_cat($goodsInfo['extend_cat_id']); // 获取分类默认选中的下拉框

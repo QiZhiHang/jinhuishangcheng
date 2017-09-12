@@ -501,7 +501,7 @@ class User extends Base {
         $count = $model->where($where)->count();
         $Page  = new Page($count,16);
         $list = $model->where($where)->order("`id` desc")->limit($Page->firstRow.','.$Page->listRows)->select();
-
+        //dump($list);die;
         $this->assign('create_time',$create_time);
         $show  = $Page->show();
         $this->assign('show',$show);

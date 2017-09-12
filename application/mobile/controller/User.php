@@ -241,6 +241,7 @@ class User extends MobileBase
             $code = I('post.mobile_code', '');
             $scene = I('post.scene', 1);
             $recommend_mobile = I('post.recommend_mobile','');
+            $nickname = I('post.nickname');
             $session_id = session_id();
             
             if(check_mobile($username)){
@@ -257,7 +258,7 @@ class User extends MobileBase
                 }
             }
 
-            $data = $logic->reg($username, $password, $password2,$recommend_mobile);
+            $data = $logic->reg($username, $password, $password2,$recommend_mobile,$nickname);
             if ($data['status'] != 1)
                 $this->error($data['msg']);
             session('user', $data['result']);
@@ -963,6 +964,7 @@ class User extends MobileBase
     public function order_confirm()
     {
         $id = I('get.id/d', 0);
+        //dump($id);die;
         $data = confirm_order($id, $this->user_id);
         if (!$data['status']) {
             $this->error($data['msg']);
@@ -1275,11 +1277,11 @@ class User extends MobileBase
                 if ($last_re && $last_re['pay_time'] > time()-3*24*3600) {
                     $this->error("充值三天之后才能提现");
                 }
-                if ($data['money']%10000 != 0) {
-                    $this->error("余额提现必须是10000的倍数");
+                if ($data['money']%100 != 0) {
+                    $this->error("余额提现必须是100的倍数");
                 }
-                $data['final_money'] = $data['money']*(1-5/100);
-                accountLog($this->user['user_id'],-$data['money'],0,'余额提现扣除',0);
+                $data['final_money'] = $data['money']*0.9;
+                accountLog($this->user['user_id'],-$data['money'],0,'余额提现'.$data['money'].'扣除手续费'.$data['money']*0.1,0);
             }elseif (I('post.withdrawals_type') == 2) {
                 if ($data['money'] > $this->user['pay_points']) {
                     $this->error("你最多可提现{$this->user['pay_points']}账户积分.");
@@ -1288,8 +1290,8 @@ class User extends MobileBase
                 if ($data['money']%100 != 0) {
                     $this->error("积分提现必须是100的倍数");
                 }
-                $data['final_money'] = $data['money']*(1-5/100);
-                accountLog($this->user['user_id'],0,-$data['money'],'积分提现扣除',0,0);
+                $data['final_money'] = $data['money']*0.9;
+                accountLog($this->user['user_id'],0,-$data['money'],'积分提现'.$data['money'].'扣除手续费'.$data['money']*0.1,0,0);
             }else if(I('post.withdrawals_type') == 3){
                 //返利余额提现
                 if($data['money'] > $this->user['my_fanxian_money']){
@@ -1298,7 +1300,7 @@ class User extends MobileBase
                 }else{
 
                     $data['final_money'] = $data['money']*0.9;
-                    accountLog($this->user['user_id'],0,0,'返利余额提现扣除',0,-$data['money']);
+                    accountLog($this->user['user_id'],0,0,'返利余额提现'.$data['money'].'扣除手续费'.$data['money']*0.1,0,-$data['money']);
                 }
 
             }else{
@@ -1488,11 +1490,56 @@ class User extends MobileBase
 
     */
 
-        public function lottery(){
+    public function lottery(){
 
+        $data =  M('account_log')->where('order_sn=111111')->order('change_time desc')->select();
+        if(!empty($data)){
 
-            return $this->fetch();
+            foreach ($data as $k => &$v) {
+               $vv = M('users')->where('user_id='.$v['user_id'])->field('mobile')->find();
+               $v['mobile'] = $vv['mobile'];
+            }
         }
+        //dump($data);die;
+        $this->assign('data',$data);
+        return $this->fetch();
+    }
+
+        public function ajaxLottery(){
+                $run = rand(0,9);
+                $pay_points = $this->user['pay_points'];
+
+                if($pay_points >= 1 ){
+                    accountLog($this->user_id,0,-1,'抽奖消费一积分');
+
+                    return json_encode(array('status'=>1,'actionStatus'=>1,'ran'=>$run*40,'onceran'=>40,'num'=>1));
+                }elseif ($pay_points < 1) {
+
+                    return json_encode(array('status'=>2,'actionStatus'=>1,'ran'=>$run*40,'onceran'=>40,'num'=>1));
+                }
+
+        }
+
+        /*奖励积分*/
+        public function delLottery(){
+
+           $data = I('get.aa');
+
+           if($data == 1){
+
+                accountLog($this->user_id,0,2,'抽奖获取奖励二积分',0,0,'111111'); 
+           }elseif ($data == 3) {
+               accountLog($this->user_id,0,3,'抽奖获取奖励三积分',0,0,'111111');
+           }elseif ($data == 5) {
+               accountLog($this->user_id,0,4,'抽奖获取奖励四积分',0,0,'111111');
+           }elseif ($data == 8) {
+               accountLog($this->user_id,0,1,'抽奖获取奖励一积分',0,0,'111111');
+           }
+
+
+        }
+
+
 
 }
 
